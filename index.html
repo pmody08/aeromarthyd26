@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aeromart Hyderabad 2026 — Imaginarium Target Console</title>
+<meta name="description" content="Imaginarium aerospace target console for Aeromart Hyderabad 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080A0D; --surface:#0F141B; --surface2:#161D27; --surface3:#1C2531;
+    --line:#222C39; --line2:#2C3848;
+    --electric:#0A6CFF; --electric2:#3E8DFF;
+    --ink:#EAEFF6; --muted:#7E8A99; --muted2:#5B6675;
+    --t1:#3E8DFF; --t2:#16C2D5; --t3:#9B8CFF; --t4:#F4A93B; --t5:#5B6675;
+    --met:#27C281; --skip:#6B7480;
+    --radius:14px;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bot:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.45;
+    -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  header{position:sticky;top:0;z-index:30;background:rgba(8,10,13,.92);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);padding:calc(var(--safe-top) + 12px) 16px 10px}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .wordmark{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
+    color:var(--muted);font-weight:500}
+  .wordmark b{color:var(--electric2);font-weight:600}
+  .title{font-family:Archivo;font-weight:800;font-size:21px;letter-spacing:-.01em;
+    margin:6px 0 2px;line-height:1.1}
+  .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .stats{display:flex;gap:8px;margin-top:11px}
+  .stat{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 10px;min-width:0}
+  .stat .n{font-family:Archivo;font-weight:700;font-size:19px;line-height:1}
+  .stat .l{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+    color:var(--muted);text-transform:uppercase;margin-top:4px}
+  .stat.met .n{color:var(--met)} .stat.todo .n{color:var(--electric2)}
+  .controls{padding:11px 16px 4px}
+  .search{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:11px;
+    padding:11px 13px;color:var(--ink);font-size:15px;font-family:Inter}
+  .search::placeholder{color:var(--muted2)}
+  .search:focus{outline:none;border-color:var(--electric);box-shadow:0 0 0 3px rgba(10,108,255,.18)}
+  .chiprow{display:flex;gap:7px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chiprow::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;background:var(--surface);border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;
+    font-weight:500;letter-spacing:.02em;cursor:pointer;display:flex;align-items:center;gap:6px;
+    transition:background .12s,border-color .12s,color .12s}
+  .chip .dot{width:7px;height:7px;border-radius:2px}
+  .chip[aria-pressed="true"]{color:var(--ink);background:var(--surface3);border-color:var(--line2)}
+  .chip.tier1[aria-pressed="true"]{border-color:var(--t1)}
+  .chip.tier2[aria-pressed="true"]{border-color:var(--t2)}
+  .chip.tier3[aria-pressed="true"]{border-color:var(--t3)}
+  .chip.tier4[aria-pressed="true"]{border-color:var(--t4)}
+  .chip.tier5[aria-pressed="true"]{border-color:var(--t5)}
+  .chip.met[aria-pressed="true"]{border-color:var(--met);color:var(--met)}
+  main{padding:8px 12px calc(var(--safe-bot) + 92px)}
+  .resultbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 6px 8px}
+  .resultcount{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted2);letter-spacing:.05em}
+  .minibtns{display:flex;gap:8px}
+  .minibtn{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);background:none;
+    border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer}
+  .minibtn:active{background:var(--surface2)}
+  .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:9px;overflow:hidden;padding-left:6px}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--t5)}
+  .card.t1::before{background:var(--t1)} .card.t2::before{background:var(--t2)}
+  .card.t3::before{background:var(--t3)} .card.t4::before{background:var(--t4)}
+  .card.met{border-color:rgba(39,194,129,.4)} .card.met::before{background:var(--met)}
+  .cardhead{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;cursor:pointer}
+  .tierbadge{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;
+    justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;color:#fff;margin-top:1px}
+  .tierbadge.t1{background:linear-gradient(135deg,#0A6CFF,#3E8DFF)}
+  .tierbadge.t2{background:linear-gradient(135deg,#0E94A3,#16C2D5)}
+  .tierbadge.t3{background:linear-gradient(135deg,#6A57E0,#9B8CFF)}
+  .tierbadge.t4{background:linear-gradient(135deg,#C77A14,#F4A93B)}
+  .tierbadge.t5{background:#2A3340;color:var(--muted)}
+  .ctext{flex:1;min-width:0}
+  .cname{font-family:Archivo;font-weight:600;font-size:15px;line-height:1.25;letter-spacing:-.005em}
+  .cmeta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+  .pill{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;color:var(--muted);
+    background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+  .pill.booth{color:var(--electric2);border-color:rgba(62,141,255,.3)}
+  .pill.tag{color:var(--ink)}
+  .metmark{flex:0 0 auto;color:var(--met);font-size:18px;margin-top:4px;display:none}
+  .card.met .metmark{display:block}
+  .hasnote{width:7px;height:7px;border-radius:50%;background:var(--electric2);display:inline-block;margin-left:1px}
+  .detail{display:none;padding:0 14px 14px;animation:fade .18s ease}
+  .card.open .detail{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .why{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:13.5px;color:#CBD3DE;line-height:1.5}
+  .why b{color:var(--ink);font-weight:600}
+  .seclabel{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted2);
+    text-transform:uppercase;margin:14px 0 7px}
+  .statusrow{display:flex;gap:7px;margin-top:13px}
+  .sbtn{flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:10px;
+    padding:11px 6px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;transition:.12s}
+  .sbtn.on.todo{background:rgba(62,141,255,.14);border-color:var(--electric);color:var(--electric2)}
+  .sbtn.on.met{background:rgba(39,194,129,.15);border-color:var(--met);color:var(--met)}
+  .sbtn.on.skip{background:rgba(107,116,128,.18);border-color:var(--skip);color:#9aa3af}
+  textarea{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;
+    color:var(--ink);font-family:Inter;font-size:14.5px;resize:vertical;min-height:74px;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--electric);box-shadow:0 0 0 3px rgba(10,108,255,.16)}
+  .cardcap{display:flex;gap:9px;align-items:stretch}
+  .capbtn{flex:1;background:var(--surface2);border:1px dashed var(--line2);color:var(--muted);border-radius:10px;
+    padding:13px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:8px;text-align:center}
+  .capbtn:active{background:var(--surface3)}
+  .cardthumb{position:relative;display:none}
+  .cardthumb img{width:84px;height:60px;object-fit:cover;border-radius:9px;border:1px solid var(--line2);display:block}
+  .cardthumb.show{display:block}
+  .delcard{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#E5484D;
+    border:2px solid var(--bg);color:#fff;font-size:13px;line-height:1;display:flex;align-items:center;
+    justify-content:center;cursor:pointer}
+  .savednote{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--met);margin-top:7px;height:12px;
+    letter-spacing:.05em;opacity:0;transition:opacity .2s}
+  .savednote.show{opacity:1}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:60;display:none;align-items:center;
+    justify-content:center;padding:20px;flex-direction:column;gap:16px}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:100%;max-height:78vh;border-radius:12px}
+  .lbclose{font-family:'IBM Plex Mono',monospace;color:var(--ink);background:var(--surface2);
+    border:1px solid var(--line2);padding:10px 22px;border-radius:10px;cursor:pointer}
+  .footbar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(8,10,13,.94);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
+    padding:10px 14px calc(var(--safe-bot) + 10px);display:flex;gap:9px}
+  .fbtn{flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--ink);border-radius:11px;
+    padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:6px}
+  .fbtn.primary{background:linear-gradient(135deg,#0A6CFF,#3E8DFF);border-color:transparent;font-weight:600}
+  .empty{text-align:center;color:var(--muted2);padding:50px 20px;font-size:14px}
+  .datanote{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);text-align:center;
+    padding:14px 24px 4px;line-height:1.7;letter-spacing:.02em}
+  .hide{display:none!important}
+  .toast{position:fixed;left:50%;bottom:calc(var(--safe-bot) + 78px);transform:translateX(-50%);
+    background:var(--surface3);border:1px solid var(--line2);color:var(--ink);font-family:'IBM Plex Mono',monospace;
+    font-size:12px;padding:9px 16px;border-radius:10px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+  .lock{position:fixed;inset:0;z-index:100;background:radial-gradient(130% 100% at 50% 0%,#0d1726,#070a0d 70%);
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .lock.hide{display:none}
+  .lockcard{width:100%;max-width:340px;text-align:center}
+  .lockbrand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--electric2);margin-bottom:24px}
+  .locktitle{font-family:Archivo;font-weight:800;font-size:26px;margin-bottom:6px}
+  .locksub{color:var(--muted);font-size:13.5px;margin-bottom:20px;line-height:1.5}
+  .pwin{width:100%;text-align:center;letter-spacing:.4em;font-family:'IBM Plex Mono',monospace;font-size:20px;
+    background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink)}
+  .pwin:focus{outline:none;border-color:var(--electric);box-shadow:0 0 0 3px rgba(10,108,255,.2)}
+  .unlockbtn{width:100%;margin-top:12px;background:linear-gradient(135deg,#0A6CFF,#3E8DFF);border:none;color:#fff;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;padding:14px;border-radius:12px;cursor:pointer}
+  .lockerr{color:#E5707A;font-family:'IBM Plex Mono',monospace;font-size:12px;margin-top:14px;height:14px;opacity:0;transition:opacity .15s}
+  .lockerr.show{opacity:1}
+  .shake{animation:shake .35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+  <div class="lockcard">
+    <div class="lockbrand">IMAGINARIUM · TARGET CONSOLE</div>
+    <div class="locktitle">Locked</div>
+    <div class="locksub">Enter passcode to open the Aeromart Hyderabad 2026 console.</div>
+    <input id="pw" class="pwin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <button id="unlock" class="unlockbtn">Unlock</button>
+    <div class="lockerr" id="lockerr">Incorrect passcode</div>
+  </div>
+</div>
+<header>
+  <div class="brandrow">
+    <div class="wordmark"><b>IMAGINARIUM</b> · TARGET CONSOLE</div>
+    <div class="wordmark">AS9100D</div>
+  </div>
+  <div class="title">Aeromart Hyderabad 2026</div>
+  <div class="sub">30 JUN – 02 JUL · HICC NOVOTEL · PARTICIPANTS LIST</div>
+  <div class="stats">
+    <div class="stat"><div class="n" id="s-total">0</div><div class="l">Companies</div></div>
+    <div class="stat todo"><div class="n" id="s-pri">0</div><div class="l">Priority T1–T2</div></div>
+    <div class="stat met"><div class="n" id="s-met">0</div><div class="l">Met</div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <input class="search" id="search" type="search" placeholder="Search company, sector, booth..." autocomplete="off">
+</div>
+<div class="chiprow" id="chips"></div>
+
+<main>
+  <div class="resultbar">
+    <div class="resultcount" id="resultcount"></div>
+    <div class="minibtns">
+      <button class="minibtn" id="metlog">⬇ Met log</button>
+      <button class="minibtn" id="reset">↺ Reset</button>
+    </div>
+  </div>
+  <div id="list"></div>
+  <div class="empty hide" id="empty">No companies match these filters.</div>
+  <div class="datanote">
+    Runs fully offline. Your status, notes and cards are saved in this browser only
+    (localStorage + IndexedDB). Use Backup to move history to another device.<br>
+    Booths and countries are read from the printed brochure. Confirm on the hall floor map.
+  </div>
+</main>
+
+<div class="footbar">
+  <button class="fbtn" id="backup">⬇ Backup history</button>
+  <button class="fbtn primary" id="restore">⬆ Restore</button>
+  <input type="file" id="restoreInput" accept="application/json,.json" hidden>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img id="lbimg" alt="Saved business card">
+  <button class="lbclose" id="lbclose">Close</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const TIER_META={
+  1:{label:"Primary OEM / Prime"},2:{label:"Tier-1 / Systems / Space / Defense"},
+  3:{label:"Coopetition / Partner / Channel"},4:{label:"Supplier to Imaginarium"},5:{label:"Low fit"}
+};
+const C=[
+ ["3D Macinfotech Pvt Ltd","India","805",5,"Reseller","3D printing and CAD reseller. A peer, not a buyer."],
+ ["8tree","USA","711",4,"Metrology","3D surface and dent scanning. Inspection tooling for your shop."],
+ ["Aaran 1 Engineering Pvt Ltd","India","305",3,"Machining","Indian precision engineering SME. Possible overflow partner."],
+ ["Accusharp Cutting Tools Pvt Ltd","India","806",4,"Tooling","Cutting tools for your CNC cells. Consumable supplier."],
+ ["Ace Dynamic Engineerings LLP","India","409",3,"Machining","Indian machining SME. Capacity or teaming."],
+ ["Adani Defence Systems and Technologies","India","*",1,"Defence prime","Indian prime scaling drones and defense. Building a supply base now."],
+ ["Advanex India Private Limited","India","605",5,"Springs","Precision springs. Limited AM fit."],
+ ["Aequs Infra","India","*",2,"Coopetition","Aequs aerospace cluster arm. Possible AM outsource and teaming."],
+ ["Aequs Limited","India","*",2,"Coopetition","Indian precision aero CM (forging, machining). Large presence, coopetition."],
+ ["Aequs SEZ Private Limited","India","117-118",2,"Coopetition","Belagavi aerospace SEZ operator. Ecosystem partner."],
+ ["Aero Metal Alliance","United Kingdom","517",4,"Metals","Aerospace metals supply."],
+ ["Aerometals and Alloys - Acnis Group","France","318",4,"Titanium","Titanium and aero alloys. Potential AM feedstock channel."],
+ ["Aeroprotec Services","France","414",3,"Surface treat","Aero surface treatment and processing."],
+ ["Aerospace Valley","France","416",5,"Cluster","French aerospace cluster body."],
+ ["Afeco Heating Systems","India","1003",5,"Heating","Industrial heating. No fit."],
+ ["AIA","India","*",5,"Trade body","Aerospace industry association."],
+ ["Air Cost Control","Singapore","906",5,"C-parts","Fasteners and consumables distribution."],
+ ["Airbus India Pvt Ltd","India","A1",1,"OEM","Anchor OEM and gold sponsor. Metal AM brackets plus an active India sourcing push. Your warmest strategic fit given prior AM qualification work."],
+ ["Ajitek Tech Solutions Private Limited","India","905",5,"IT","IT and tech services."],
+ ["AKSI Aerospace Group","India","1005",3,"Aero parts","Indian aerospace components."],
+ ["Alro S.A.","Romania","A12",4,"Aluminium","Aluminium flat-rolled supply."],
+ ["AMDP & OCETA","France","313",3,"Machining","French aero machining and processing."],
+ ["Amphenol Interconnect India","India","417-418",5,"Connectors","Interconnect. Low AM fit."],
+ ["Ananth Technologies Pvt Ltd","India","B4",2,"Space","ISRO-linked satellite and space integrator. Matches your AS9100D space case study."],
+ ["Anil Metals Private Limited","India","B8",4,"Metals","Metals supply."],
+ ["Anjana Engineering","India","1007",3,"Machining","Indian engineering SME."],
+ ["Apollo Micro Systems Limited","India","A7",5,"Defence electronics","Avionics and electronics. Low AM fit."],
+ ["Arconic Extrusions Hannover GmbH","Germany","1008",4,"Aluminium","Aerospace aluminium extrusions."],
+ ["Aries Alloys","India","508",4,"Alloys","Specialty alloy supply."],
+ ["Asaco Private Limited","India","503-504",3,"Tooling","Aero tooling and composite processing."],
+ ["Asian Machine Tool Corporation","India","904",4,"Machines","Machine tool supply (capex)."],
+ ["Aubert & Duval","India","809-810",4,"Superalloy powder","Premium Ti and Ni alloys plus AM powder. Strategic feedstock source for metal AM."],
+ ["Automated Tooling Systems India (ATS)","India","—",4,"Automation","Tooling and automation supply."],
+ ["Avani Tech Solutions Private Limited","India","602",5,"IT","IT and tech services."],
+ ["Avantus Aerospace","USA","412",3,"Coopetition","C-class parts (fasteners, shims, brackets). Bracket end overlaps your AM."],
+ ["Axirium Aerospace Private Limited","India","506",3,"Aero parts","Indian aerospace components."],
+ ["Axiscades Technologies Limited","India","A11",3,"Channel","Aero engineering and design services. Design-to-manufacture channel."],
+ ["Axon Interconnectors and Wires","India","B5",5,"Connectors","Wires and interconnect."],
+ ["Axon Cables and Connectors","France","*",5,"Connectors","Cables and connectors."],
+ ["Azad Engineering Limited","India","A14",3,"Coopetition","Bronze sponsor. Precision forged and machined turbine and aero parts. Partner or competitor."],
+ ["Bharat Dynamics Limited","India","*",2,"Defence","Missile PSU. Defense indigenization buyer. Export-control sensitivity applies."],
+ ["Bharat Forge Ltd","India","*",3,"Coopetition","Forging giant moving into aero and Kalyani defence. Teaming and tooling play."],
+ ["Bibus Metals Sdn. Bhd.","Malaysia","707",4,"Metals","Ti, Ni and superalloy distribution."],
+ ["Bluephoton Technology India","India","307",5,"Photonics","Photonics. Low fit."],
+ ["Breton S.p.A.","Italy","213",4,"AM/CNC equipment","Makes metal AM and CNC systems. Capex or process partner."],
+ ["Bureau de France à Hyderabad","India","*",5,"Trade body","French trade office."],
+ ["Capgemini","France","*",5,"IT","Engineering and IT services."],
+ ["Castle Metals Aerospace","Singapore","513-514",4,"Metals","Aerospace metals distribution."],
+ ["CEMB S.p.A.","Italy","212",4,"Machines","Balancing machines (capex)."],
+ ["CGR International","France","317",4,"Aero metals","Aluminium and aero metals processing."],
+ ["Cilicant Pvt Ltd","India","812",5,"Packaging","Desiccants and packaging."],
+ ["Cnerzy Inc","India","803",5,"Energy","Energy. Low fit."],
+ ["CNES (French Space Agency)","France","*",2,"Space agency","French space programs. Space sourcing relationships."],
+ ["Collins Aerospace","India","410",1,"OEM systems","RTX systems major. Deep AM and precision sourcing."],
+ ["Composites Technology Research Malaysia","Malaysia","*",3,"Composites","Composite aerostructures."],
+ ["Continental Carriers Pvt Ltd","India","617",5,"Logistics","Freight and logistics."],
+ ["Creative EDM Engg Pvt Ltd","India","308",4,"EDM","EDM service and tooling."],
+ ["Crescendo Worldwide","India","1009-1010",5,"Consulting","Business development consulting."],
+ ["CTRM Aero Composites Sdn. Bhd.","Malaysia","*",3,"Composites","Composite aerostructures."],
+ ["CTRM Aerosystems Sdn Bhd","Malaysia","*",3,"Aerosystems","Aerosystems and assemblies."],
+ ["Cyient DLM","India","309-310",2,"EMS + precision","Box-build and precision for aero, defense and space. Could buy AM and CNC."],
+ ["CzechTrade India - Bangalore","Czech Republic","*",5,"Trade body","Czech trade office."],
+ ["Darien Aerospace Pvt Ltd","India","618",3,"Aero parts","Indian aerospace components."],
+ ["Dassault Aircraft Service India","India","*",2,"OEM service","Dassault service and MRO arm. Spares and AOG via AM."],
+ ["Dassault Aviation","India","*",1,"OEM","Rafale offsets flowing into India. Brackets and ducting."],
+ ["Davi - Promau S.r.l.","Italy","215",4,"Machines","Plate and profile bending machines (capex)."],
+ ["Dhruva Space Private Limited","India","507",2,"Space","Indian smallsat manufacturer. AM brackets and satellite structures."],
+ ["DMG Mori","Germany","609-610",4,"Machines","CNC machine tools (capex)."],
+ ["Dubai Chambers - India Office","UAE","909",5,"Trade body","Trade office."],
+ ["Eaton - Souriau India Private Ltd","India","*",2,"Systems","Eaton aerospace fluid and hydraulic systems. AM manifolds. Souriau connectors are lower fit."],
+ ["EDS Technologies Pvt Ltd","India","714",5,"IT","CAD and PLM reseller."],
+ ["Embraer India Pvt Ltd","India","B1",1,"OEM","Growing India footprint including C-390. OEM buyer."],
+ ["Ensinger India Engineering Plastics","India","B11",4,"Polymer","High-performance engineering plastics (PEEK). Polymer feedstock and stock shapes."],
+ ["Enterprise Singapore","Singapore","*",5,"Trade body","Trade agency."],
+ ["Equad Engineering Services Pvt Ltd","India","403-404",3,"Engineering","Engineering services."],
+ ["Fabheads Automation Private Limited","India","304",3,"Composite AM","Continuous-fiber composite AM. Adjacent tech, possible teaming."],
+ ["Firan Technology Group Corp","Canada","B3",5,"PCBs","Aerospace PCBs and illuminated panels."],
+ ["French Embassy in India","France","*",5,"Embassy","Diplomatic mission."],
+ ["FTG Corporation","Canada","*",5,"PCBs","Aerospace electronics."],
+ ["GE Aerospace","India","*",1,"OEM","Engine AM pioneer (fuel nozzles, brackets) with India footprint. You already have a GE meeting brief."],
+ ["GIFAS","France","311-312",5,"Trade body","French aerospace federation."],
+ ["GIMAS","Morocco","*",5,"Trade body","Moroccan aerospace industries body."],
+ ["GMR Hyderabad International Airport","India","B7",3,"MRO","GMR Aero Technic MRO. AM spares and obsolescence."],
+ ["Government of Telangana - India","India","A5",5,"Government","Host state government."],
+ ["Gowra Aerospace Technologies","India","611-612",3,"Aero parts","Indian sheet metal and assemblies."],
+ ["Grob Machine Tools India","India","713",4,"Machines","Machining centers (capex)."],
+ ["Hanshin Metalics Corp.","Japan","411",4,"Metals","Metals supply."],
+ ["Hessen Trade & Invest GmbH","Germany","1002",5,"Trade body","German state investment agency."],
+ ["HFCL Limited","India","A2-A13",5,"Telecom","Optical and defense electronics. Low AM fit."],
+ ["Hind Industrial & Mercantile Corp","India","701-702",4,"Materials","Materials and trading."],
+ ["Horizon","Germany","815",5,"Unverified","Listing unclear. Verify on site."],
+ ["Howmet Fastening Systems SAS","France","A9",2,"Fasteners","Howmet group. Fasteners here, but Howmet is a major Ti AM and casting player. Worth a relationship."],
+ ["Hutchinson","India","415",2,"Systems","Sealing, vibration and composite systems. Systems buyer."],
+ ["Hutchinson (Sourcing)","India","*",2,"Sourcing","Hutchinson procurement arm. Direct sourcing contact."],
+ ["ICICI Bank","India","601",5,"Bank","Banking."],
+ ["Icomm Tele Limited","India","A6",5,"Defence electronics","Defense engineering and electronics. Low AM fit."],
+ ["IHI Corporation","Japan","*",1,"OEM","Japanese aero-engine maker. AM-relevant engine components."],
+ ["Inder Enterprises","India","802",4,"Materials","Materials and supply."],
+ ["Indev Infra Private Limited","India","A3",5,"Infra","Infrastructure."],
+ ["Indian Army","India","*",5,"End user","Service end user. Government."],
+ ["Indo Aerospace Solutions Pvt Ltd","India","910",3,"Aero parts","Indian aerospace components."],
+ ["Indo-French Chamber of Commerce","India","717",5,"Trade body","Bilateral chamber."],
+ ["Innomet Advanced Materials Ltd","India","408",4,"Metal powder","Indian advanced materials. Possible domestic metal powder source."],
+ ["Integrated Services and Consultancy","India","604",5,"Consulting","Consultancy."],
+ ["Israel Aerospace India Pvt. Ltd.","India","*",2,"Defence/UAV","IAI: missiles, UAVs and systems. Defense and drone buyer."],
+ ["ISRO - NSRE","India","*",2,"Space agency","Top Indian space buyer. Direct fit for your space ambitions."],
+ ["Italian Trade Agency","Italy","113/214",5,"Trade body","Trade agency."],
+ ["Iyappan Engineering Industries","India","302",3,"Machining","Indian machining SME."],
+ ["Jayasuriya Aero Private Limited","India","404",3,"Aero parts","Indian aerospace components."],
+ ["JEH Aerospace Pvt Ltd","India","306",2,"Partner","Fast-growing Indian precision aero (ex-Tata founders). Buyer or teaming partner."],
+ ["JJG Aero Private Limited","India","715",3,"Aero parts","Indian aero precision components."],
+ ["JK Maini Aerospace","India","*",3,"Aero parts","Maini precision aerospace."],
+ ["Jobs SpA","Italy","216",4,"Machines","5-axis machining centers (capex)."],
+ ["Kriti Metform Ltd","India","716",4,"Forming","Metal forming."],
+ ["Latecoere (315)","France","315",2,"Tier-1","French Tier-1 aerostructures. Buyer or teaming."],
+ ["Latecoere (316)","France","316",2,"Tier-1","Latecoere interconnection and wiring arm."],
+ ["Lattice Aerospace Private Limited","India","813",3,"Aero precision","Indian aero precision machining."],
+ ["Leifeld Metal Spinning GmbH (MTI)","Germany","B6",4,"Process","Metal spinning equipment and service (capex)."],
+ ["Leonardo SpA","Italy","112",1,"OEM","Helicopter and defense OEM. AM adopter."],
+ ["LGM Group","France","718",5,"Engineering","Engineering services."],
+ ["Lokesh Machines Limited","India","914",4,"Machines","Machine tools (capex)."],
+ ["M.E.Rin SRL","Italy","111",4,"Equipment","Tooling and equipment."],
+ ["M/S Kalapurna Steel & Engg","India","907",4,"Steel","Steel and engineering."],
+ ["Maapan Labs Private Limited","India","603",5,"Labs","Testing labs."],
+ ["Machine Tools (India) Limited","India","A8",4,"Machines","Machine tools (capex)."],
+ ["Magellan Aerospace Bangalore","India","*",1,"Tier-1","Tier-1 aerostructures and complex assemblies."],
+ ["Mahindra Aerostructures Pvt.Ltd.","India","515-516",1,"Tier-1","Indian Tier-1 aerostructures. Accessible and scaling."],
+ ["Master Fluid Solutions (India)","India","908",4,"Consumables","Coolants and metalworking fluids."],
+ ["Masters Preci Tools Private Limited","India","*",4,"Tooling","Precision tooling."],
+ ["MBDA","France","*",1,"Missiles","Missile prime. Precision parts. Export-control sensitivity applies."],
+ ["Mitsubishi Heavy Industries India","India","518",1,"OEM","Aerostructures and systems OEM."],
+ ["Moovinv","France","*",5,"Innovation","Innovation services."],
+ ["Moroccan Investment & Export Agency (AMDIE)","Morocco","*",5,"Trade body","Investment agency."],
+ ["MQS Technologies Pvt Ltd","India","801",5,"IT","Tech services."],
+ ["Nano-Tech S.p.A.","Italy","115",4,"Composites","Composite materials and prepreg."],
+ ["Neda Aero","India","1000",3,"Aero parts","Indian aerospace components."],
+ ["Nexa Defence (I) Limited","India","1004",3,"Defence parts","Indian defense components."],
+ ["Nexteam","France","718",3,"Coopetition","French machining group. Coopetition and teaming."],
+ ["Oerlikon Balzers Coating India","India","712",4,"Finishing","PVD coatings and finishing. Oerlikon also does AM powder."],
+ ["Ohara Optical [M]","Malaysia","*",5,"Optics","Optical glass."],
+ ["Okaya & Co., Ltd.","Japan","804",5,"Trading","Trading house."],
+ ["Omnitech Engineering Limited","India","B9",3,"Engineering","Engineering and machining."],
+ ["Pilatus Aircraft Ltd","Switzerland","*",1,"OEM","PC-21 program with India. Structural and AM parts."],
+ ["Radiotech NDT Test Lab Pvt Ltd","India","502",4,"NDT","NDT testing. Qualification partner for AM parts."],
+ ["Raghu Vamsi Machine Tools","India","A4",3,"Aero machining","Hyderabad aero precision machining. Coopetition and teaming."],
+ ["Rangsons Aerospace Private Limited","India","613-614",2,"Aero systems","Cyient-linked aero systems and precision. Buyer or partner."],
+ ["Recaero India","India","413",3,"Aero spares","Spares and AOG machining. Coopetition."],
+ ["Rotary Connectors Private Limited","India","501",5,"Connectors","Connectors."],
+ ["SAAB","Sweden","*",1,"OEM","Gripen and defense. India JV ambitions."],
+ ["Safran","India","C1",1,"OEM","Engines, landing gear, nacelles and interiors. Major AM adopter."],
+ ["Safran Aerosystems","France","*",1,"OEM systems","Safran systems division. AM and precision sourcing."],
+ ["Safran Group","India","*",1,"OEM","Safran group sourcing. Top engine and systems target."],
+ ["SAMS Advanced Climatic Technologies","India","509-510",5,"Climatic","Climatic and environmental test."],
+ ["Samuha Engineering Industries Ltd","India","912",3,"Engineering","Engineering and machining."],
+ ["Sanav Aerodef Private Limited","India","811",3,"Aero/defence","Aerospace and defense parts."],
+ ["Sarix SA","Switzerland","706",4,"Machines","Micro-EDM machines (capex)."],
+ ["SAS Partners Corporate Advisors","India","303",5,"Advisory","Corporate advisory."],
+ ["Schiebel Systems India Private Limited","India","705",2,"UAV OEM","Camcopter S-100 UAV maker. Drone airframe and components fit."],
+ ["Schunk Intec India Private Limited","India","A18",4,"Workholding","Workholding and automation (capex)."],
+ ["Scope Metals Trading and Services","India","B11",4,"Metals","Metals trading."],
+ ["SEC Industries Pvt. Ltd.","India","911",3,"Aero precision","Hyderabad aero and defense precision machining and assemblies."],
+ ["Sesta Lab","Italy","211",4,"Testing","Testing lab."],
+ ["Shimifrez Inc","Canada","816",4,"Finishing","Precision etching and finishing."],
+ ["Sidwal Refrigeration Industry India","India","703-704",5,"HVAC","Rail and defense HVAC."],
+ ["Simest SpA","Italy","*",5,"Finance","Export finance."],
+ ["Smart-Waves Technologies Private Limited","India","407",5,"Electronics","IoT and electronics."],
+ ["SMW Autoblok Workholding (P) Ltd","India","607-608",4,"Workholding","Workholding (capex)."],
+ ["SNECI","France","*",5,"Consulting","Supply chain consulting."],
+ ["Sona Speed Pvt Ltd","India","217-218",5,"Precision","Precision components. Low fit."],
+ ["Squaremag Systems","India","505",5,"Electronics","Electronics and systems."],
+ ["Structural Solutions Private Limited","India","814",3,"Structures","Structures and engineering."],
+ ["Suyash Global Pvt. Ltd.","India","B10",4,"Metals","Metals and forgings supply."],
+ ["SVM Private Limited","India","401-402",3,"Precision","Precision components."],
+ ["Takshion Mechatronics Pvt. Ltd.","India","1006",3,"Mechatronics","Mechatronics and assemblies."],
+ ["Tamil Nadu Industrial Dev Corp (TIDCO)","India","A17",5,"Government","State development corporation."],
+ ["TASL - Domestic Aero","India","*",1,"Tata Tier-1","Tata Advanced Systems domestic aero. Indian Tier-1 anchor."],
+ ["Tata Advanced Systems - H125 Helicopters","India","*",1,"Tata Tier-1","Tata H125 airframe line. Structural and AM parts."],
+ ["Tata Advanced Systems Limited","India","A10",1,"Tata Tier-1","Indian Tier-1 anchor. Aerostructures for Airbus, Boeing, Lockheed. Local and accessible."],
+ ["Tata Advanced Systems - COE Aeroengines","India","*",1,"Tata Tier-1","Tata aeroengine center of excellence. Engine hardware fit."],
+ ["Tata Boeing Aerospace Limited","India","*",1,"Tata Tier-1","Apache fuselage line. Aerostructures buyer."],
+ ["Tata Lockheed Martin Aerostructures","India","*",1,"Tata Tier-1","C-130 empennage and structures. Aerostructures buyer."],
+ ["Tata Sikorsky Aerospace (SCM Team)","India","*",1,"Tata Tier-1","Rotorcraft structures. Supply-chain team present, direct sourcing contact."],
+ ["Testia, An Airbus Company","France","314",4,"NDT","Airbus NDT and inspection. AM part-qualification and Airbus channel."],
+ ["Titanium Industries India","India","606",4,"Titanium","Titanium distribution. Feedstock for Ti AM and CNC."],
+ ["Toyota Tsusho Corporation","Japan","*",5,"Trading","Trading house."],
+ ["Tubacex Service Solutions India","India","903",4,"Stainless","Stainless and specialty tube and long products."],
+ ["VAF Aero Systems Private Limited","India","B2",3,"Aero systems","Indian aero systems and precision."],
+ ["Valbruna Stainless & Nickel Alloys India","India","B12",4,"Stainless","Stainless and nickel alloys (316L and similar)."],
+ ["VVDN Technologies","India","405-406",5,"Electronics","Electronics ODM."],
+ ["Wave Mechanics Pvt Ltd","India","511-512",3,"Aero","Acoustic and composite aero work."],
+ ["Welsh Government","United Kingdom","1001",5,"Government","Inward investment body."],
+ ["WFL Millturn Technologies","Austria","709-710",4,"Machines","Mill-turn machines (capex)."],
+ ["Willemin-Macodel SA","Switzerland","708",4,"Machines","Precision 5-axis and micro machining (capex)."],
+ ["Zecha Precision Tools Limited","India","615-616",4,"Tooling","Precision cutting tools."],
+ ["Zen Technologies Limited","India","A15",5,"Simulators","Simulators and anti-drone. Low AM fit."],
+ ["Zetatek Technologies Private Limited","India","915",5,"Test","Test and electronics."],
+ ["Zoppas Industries Heating Elements","Italy","114",5,"Heating","Heating elements."]
+].map((r,i)=>({id:"c"+i,name:r[0],country:r[1],booth:r[2],tier:r[3],tag:r[4],why:r[5]}));
+
+/* ===================== STORAGE (localStorage + IndexedDB) ===================== */
+const SKEY="aeromart_state_v1";
+let STATE={};            // id -> {status, notes, hasCard}
+let mem={};              // fallback if storage blocked
+
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return mem[k]??null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){mem[k]=v;}}
+function loadState(){const raw=lsGet(SKEY);if(raw){try{STATE=JSON.parse(raw)||{};}catch(e){STATE={};}}}
+let saveTimer=null;
+function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>lsSet(SKEY,JSON.stringify(STATE)),200);}
+function rec(id){return STATE[id]||(STATE[id]={status:"todo",notes:"",hasCard:false});}
+
+let _db=null;
+function db(){
+  return new Promise((res,rej)=>{
+    if(_db)return res(_db);
+    try{
+      const r=indexedDB.open("aeromartDB",1);
+      r.onupgradeneeded=()=>{r.result.createObjectStore("cards");};
+      r.onsuccess=()=>{_db=r.result;res(_db);};
+      r.onerror=()=>rej(r.error);
+    }catch(e){rej(e);}
+  });
+}
+async function cardSet(id,val){
+  try{const d=await db();return new Promise((res,rej)=>{
+    const tx=d.transaction("cards","readwrite");tx.objectStore("cards").put(val,id);
+    tx.oncomplete=()=>res();tx.onerror=()=>rej();});}
+  catch(e){mem["card:"+id]=val;}
+}
+async function cardGet(id){
+  try{const d=await db();return new Promise((res)=>{
+    const tx=d.transaction("cards","readonly");const rq=tx.objectStore("cards").get(id);
+    rq.onsuccess=()=>res(rq.result||null);rq.onerror=()=>res(null);});}
+  catch(e){return mem["card:"+id]??null;}
+}
+async function cardDel(id){
+  try{const d=await db();return new Promise((res)=>{
+    const tx=d.transaction("cards","readwrite");tx.objectStore("cards").delete(id);
+    tx.oncomplete=()=>res();tx.onerror=()=>res();});}
+  catch(e){delete mem["card:"+id];}
+}
+
+/* ===================== IMAGE COMPRESS ===================== */
+function compress(file){
+  return new Promise((res,rej)=>{
+    const img=new Image();const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const max=920;let w=img.width,h=img.height;
+      if(w>h&&w>max){h=h*max/w;w=max;}else if(h>=w&&h>max){w=w*max/h;h=max;}
+      const cv=document.createElement("canvas");cv.width=w;cv.height=h;
+      cv.getContext("2d").drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);res(cv.toDataURL("image/jpeg",0.62));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej();};
+    img.src=url;
+  });
+}
+
+/* ===================== FILTERS ===================== */
+let activeTier=null, onlyMet=false, q="";
+const chips=[
+  {key:"all",label:"All",cls:""},
+  {key:"t1",label:"T1 OEM",cls:"tier1",dot:"var(--t1)"},
+  {key:"t2",label:"T2",cls:"tier2",dot:"var(--t2)"},
+  {key:"t3",label:"T3 Partner",cls:"tier3",dot:"var(--t3)"},
+  {key:"t4",label:"T4 Supplier",cls:"tier4",dot:"var(--t4)"},
+  {key:"t5",label:"T5 Low",cls:"tier5",dot:"var(--t5)"},
+  {key:"met",label:"✓ Met",cls:"met"}
+];
+function renderChips(){
+  const wrap=document.getElementById("chips");wrap.innerHTML="";
+  chips.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chip "+c.cls;b.dataset.key=c.key;
+    let pressed=false;
+    if(c.key==="all")pressed=(!activeTier&&!onlyMet);
+    else if(c.key==="met")pressed=onlyMet;
+    else pressed=(activeTier===Number(c.key[1]));
+    b.setAttribute("aria-pressed",pressed);
+    b.innerHTML=(c.dot?`<span class="dot" style="background:${c.dot}"></span>`:"")+c.label;
+    b.onclick=()=>{
+      if(c.key==="all"){activeTier=null;onlyMet=false;}
+      else if(c.key==="met"){onlyMet=!onlyMet;}
+      else{const t=Number(c.key[1]);activeTier=(activeTier===t?null:t);}
+      renderChips();render();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* ===================== RENDER ===================== */
+const TIER_ORDER={1:0,2:1,3:2,4:3,5:4};
+function matches(c){
+  if(activeTier&&c.tier!==activeTier)return false;
+  if(onlyMet&&rec(c.id).status!=="met")return false;
+  if(q){const s=(c.name+" "+c.tag+" "+c.country+" "+c.booth+" T"+c.tier).toLowerCase();if(!s.includes(q))return false;}
+  return true;
+}
+function render(){
+  const list=document.getElementById("list");
+  const items=C.filter(matches).sort((a,b)=>{
+    const ra=rec(a.id).status==="met"?1:0, rb=rec(b.id).status==="met"?1:0;
+    if(ra!==rb)return ra-rb;
+    if(TIER_ORDER[a.tier]!==TIER_ORDER[b.tier])return TIER_ORDER[a.tier]-TIER_ORDER[b.tier];
+    return a.name.localeCompare(b.name);
+  });
+  list.innerHTML="";
+  items.forEach(c=>list.appendChild(cardEl(c)));
+  document.getElementById("empty").classList.toggle("hide",items.length>0);
+  document.getElementById("resultcount").textContent=items.length+" shown · tap to open";
+  updateStats();
+}
+function cardEl(c){
+  const r=rec(c.id);const t="t"+c.tier;
+  const el=document.createElement("div");
+  el.className="card "+t+(r.status==="met"?" met":"");
+  const head=document.createElement("div");head.className="cardhead";
+  head.innerHTML=`
+    <div class="tierbadge ${t}">T${c.tier}</div>
+    <div class="ctext">
+      <div class="cname">${esc(c.name)}</div>
+      <div class="cmeta">
+        <span class="pill tag">${esc(c.tag)}</span>
+        <span class="pill">${esc(c.country)}</span>
+        <span class="pill booth">${c.booth==="*"||c.booth==="—"?"Booth n/a":"Booth "+esc(c.booth)}</span>
+        ${r.notes?'<span class="hasnote" title="Has notes"></span>':""}
+      </div>
+    </div>
+    <div class="metmark">✓</div>`;
+  head.onclick=()=>el.classList.toggle("open");
+  el.appendChild(head);
+
+  const d=document.createElement("div");d.className="detail";
+  d.innerHTML=`
+    <div class="why"><b>T${c.tier} · ${TIER_META[c.tier].label}.</b> ${esc(c.why)}</div>
+    <div class="statusrow">
+      <button class="sbtn todo ${r.status==="todo"?"on":""}" data-s="todo">◎ To meet</button>
+      <button class="sbtn met ${r.status==="met"?"on":""}" data-s="met">✓ Met</button>
+      <button class="sbtn skip ${r.status==="skip"?"on":""}" data-s="skip">⊘ Skip</button>
+    </div>
+    <div class="seclabel">Notes</div>
+    <textarea placeholder="What they make, who you spoke to, next step...">${esc(r.notes)}</textarea>
+    <div class="savednote">Saved</div>
+    <div class="seclabel">Business card</div>
+    <div class="cardcap">
+      <label class="capbtn">📇 Add card photo<input type="file" accept="image/*" capture="environment" hidden></label>
+      <div class="cardthumb ${r.hasCard?"show":""}"><img alt="Saved card"><div class="delcard">×</div></div>
+    </div>`;
+  el.appendChild(d);
+
+  d.querySelectorAll(".sbtn").forEach(b=>{
+    b.onclick=()=>{
+      r.status=b.dataset.s;persist();
+      d.querySelectorAll(".sbtn").forEach(x=>x.classList.toggle("on",x.dataset.s===r.status));
+      el.classList.toggle("met",r.status==="met");
+      updateStats();
+    };
+  });
+  const ta=d.querySelector("textarea"),saved=d.querySelector(".savednote");let nt=null;
+  ta.oninput=()=>{r.notes=ta.value;persist();clearTimeout(nt);saved.classList.add("show");
+    nt=setTimeout(()=>saved.classList.remove("show"),900);};
+  const input=d.querySelector('input[type=file]'),thumb=d.querySelector(".cardthumb"),tImg=thumb.querySelector("img");
+  if(r.hasCard)cardGet(c.id).then(data=>{if(data)tImg.src=data;});
+  input.onchange=async()=>{
+    if(!input.files||!input.files[0])return;
+    try{const data=await compress(input.files[0]);await cardSet(c.id,data);r.hasCard=true;persist();
+      tImg.src=data;thumb.classList.add("show");}
+    catch(e){alert("Could not save that image. Try another photo.");}
+    input.value="";
+  };
+  tImg.onclick=async()=>{const data=await cardGet(c.id);if(data)openLightbox(data);};
+  thumb.querySelector(".delcard").onclick=async(ev)=>{ev.stopPropagation();await cardDel(c.id);
+    r.hasCard=false;persist();thumb.classList.remove("show");tImg.src="";};
+  return el;
+}
+function updateStats(){
+  document.getElementById("s-total").textContent=C.length;
+  document.getElementById("s-pri").textContent=C.filter(c=>c.tier<=2).length;
+  document.getElementById("s-met").textContent=Object.values(STATE).filter(x=>x.status==="met").length;
+}
+
+/* ===================== LIGHTBOX + TOAST ===================== */
+function openLightbox(src){document.getElementById("lbimg").src=src;document.getElementById("lightbox").classList.add("show");}
+document.getElementById("lbclose").onclick=()=>document.getElementById("lightbox").classList.remove("show");
+document.getElementById("lightbox").onclick=(e)=>{if(e.target.id==="lightbox")e.target.classList.remove("show");};
+let toastT=null;
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);}
+
+/* ===================== EXPORT / BACKUP / RESTORE ===================== */
+function dl(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();}
+
+document.getElementById("metlog").onclick=()=>{
+  const met=C.filter(c=>rec(c.id).status==="met");
+  let out="AEROMART HYDERABAD 2026 — MET LOG (Imaginarium)\n";
+  out+="Generated "+new Date().toLocaleString()+"\nCompanies met: "+met.length+"\n\n";
+  if(!met.length)out+="No companies marked Met yet.\n";
+  met.sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]||a.name.localeCompare(b.name)).forEach(c=>{
+    const r=rec(c.id);
+    out+="[T"+c.tier+"] "+c.name+"  ("+c.country+", Booth "+c.booth+")\n";
+    out+="  Fit: "+c.tag+"\n";
+    if(r.notes)out+="  Notes: "+r.notes.replace(/\n/g," ")+"\n";
+    if(r.hasCard)out+="  Card: saved in app\n";
+    out+="\n";
+  });
+  dl("aeromart-met-log.txt",new Blob([out],{type:"text/plain"}));
+};
+
+document.getElementById("backup").onclick=async()=>{
+  toast("Building backup...");
+  const cards={};
+  for(const c of C){if(rec(c.id).hasCard){const data=await cardGet(c.id);if(data)cards[c.id]=data;}}
+  const payload={app:"aeromart-target-console",v:1,exported:new Date().toISOString(),state:STATE,cards};
+  dl("aeromart-backup.json",new Blob([JSON.stringify(payload)],{type:"application/json"}));
+  toast("Backup downloaded");
+};
+
+document.getElementById("restore").onclick=()=>document.getElementById("restoreInput").click();
+document.getElementById("restoreInput").onchange=(e)=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const fr=new FileReader();
+  fr.onload=async()=>{
+    try{
+      const data=JSON.parse(fr.result);
+      if(!data||!data.state){toast("Not a valid backup file");return;}
+      STATE=data.state||{};
+      if(data.cards){for(const id in data.cards){await cardSet(id,data.cards[id]);}}
+      lsSet(SKEY,JSON.stringify(STATE));
+      renderChips();render();
+      toast("History restored");
+    }catch(err){toast("Could not read that file");}
+    e.target.value="";
+  };
+  fr.readAsText(f);
+};
+
+document.getElementById("reset").onclick=()=>{
+  activeTier=null;onlyMet=false;q="";document.getElementById("search").value="";
+  renderChips();render();window.scrollTo({top:0,behavior:"smooth"});
+};
+document.getElementById("search").oninput=(e)=>{q=e.target.value.trim().toLowerCase();render();};
+function esc(s){return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+
+/* ===================== INIT ===================== */
+loadState();renderChips();render();updateStats();
+
+/* ===================== PASSCODE GATE ===================== */
+const PASSCODE="1234";
+const UKEY="aeromart_unlocked";
+const lock=document.getElementById("lock"),pw=document.getElementById("pw"),lockerr=document.getElementById("lockerr");
+function unlockApp(){lock.classList.add("hide");}
+function tryUnlock(){
+  if(pw.value===PASSCODE){try{localStorage.setItem(UKEY,"1");}catch(e){}unlockApp();}
+  else{
+    lockerr.classList.add("show");
+    const cd=lock.querySelector(".lockcard");cd.classList.remove("shake");void cd.offsetWidth;cd.classList.add("shake");
+    pw.value="";pw.focus();
+  }
+}
+document.getElementById("unlock").onclick=tryUnlock;
+pw.addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock();});
+pw.addEventListener("input",()=>lockerr.classList.remove("show"));
+(function(){
+  let u=null;try{u=localStorage.getItem(UKEY);}catch(e){}
+  if(u==="1"){unlockApp();}else{setTimeout(()=>pw.focus(),200);}
+})();
+</script>
+</body>
+</html>
